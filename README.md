@@ -13,5 +13,5 @@ Current predictions before today's games:
   - Neural Network: WAS beats PHI; BUF beats KC
   - Random Forest: PHI beats WAS; KC beats BUF
 
-
-* Update at 9:15 PM- both the predictions made by the random forest were correct.
+## Updates
+9:15 PM - both the predictions made by the random forest were correct.
