@@ -10,11 +10,11 @@ from keras.utils import to_categorical
 df = pd.read_csv("nfl_games.csv")
 
 # Will come back to these in future as these add complications
-df_v1 = df.drop(columns=['game_id', 'week', 'gameday', 'weekday', 'gametime', 'location', 'total',
+df_v1 = df.drop(columns=['game_id', 'week', 'gameday', 'weekday', 'gametime', 'total',
                          'overtime', 'old_game_id', 'gsis', 'nfl_detail_id', 'pfr', 'pff', 'espn',
                          'ftn', 'away_rest', 'home_rest', 'away_moneyline', 'home_moneyline', 'spread_line',
                          'away_spread_odds', 'home_spread_odds', 'total_line', 'under_odds', 'over_odds',
-                         'temp', 'wind', 'away_qb_name', 'home_qb_name', 'away_coach', 'home_coach', 'referee',
+                         'away_qb_name', 'home_qb_name', 'away_coach', 'home_coach', 'referee',
                          'stadium'])
 df_v1 = df_v1.dropna()
 
@@ -26,8 +26,8 @@ target = 'result' # home score - away score
 X = df_v1.drop(columns=[target])
 y = df_v1[target]
 
-categorical_columns = ['season', 'game_type', 'away_team', 'home_team', 'roof', 'surface', 'div_game']
-numerical_columns = ['away_score', 'home_score']
+categorical_columns = ['season', 'game_type', 'away_team', 'home_team', 'roof', 'surface', 'div_game', 'location']
+numerical_columns = ['away_score', 'home_score', 'temp', 'wind']
 
 # Trying both encoders
 oh_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)  # For most categorical columns
@@ -77,7 +77,7 @@ print(f"Test Precision: {rnn_precision:.2f}")
 print(f"Test Recall: {rnn_recall:.2f}")
 
 
-def predict_winner_rnn(away_team, home_team, roof, surface, div_game, trained_model, oh_encoder, scaler):
+def predict_winner_rnn(away_team, home_team, roof, surface, div_game, location, temp, wind, trained_model, oh_encoder, scaler):
 
     # placeholder input with the required structure..?
     sample_data = {
@@ -89,7 +89,10 @@ def predict_winner_rnn(away_team, home_team, roof, surface, div_game, trained_mo
         "surface": surface,
         "away_score": 0,  # Placeholder
         "home_score": 0,  # Placeholder
-        "div_game": div_game
+        "div_game": div_game,
+        'location': location, # Change: Remove list brackets
+        'temp': temp, # Change: Remove list brackets
+        'wind': wind # Change: Remove list brackets
     }
 
     # Convert input into a DataFrame
@@ -97,7 +100,7 @@ def predict_winner_rnn(away_team, home_team, roof, surface, div_game, trained_mo
 
     categorical_input = input_df[categorical_columns]
     encoded_categorical = oh_encoder.transform(categorical_input)
-    numerical_input = input_df[['away_score', 'home_score']]
+    numerical_input = input_df[['away_score', 'home_score','temp', 'wind']]
     scaled_numerical = scaler.transform(numerical_input)
 
     final_input = np.hstack([scaled_numerical, encoded_categorical])
@@ -121,11 +124,14 @@ def predict_winner_rnn(away_team, home_team, roof, surface, div_game, trained_mo
 
 
 result = predict_winner_rnn(
-    away_team="BUF",
+    away_team="PHI",
     home_team="KC",
     roof="Open",
     surface="Grass",
     div_game=1,
+    location="Neutral",
+    temp=74,
+    wind=5,
     trained_model=rnn,
     oh_encoder=oh_encoder,
     scaler=scaler
