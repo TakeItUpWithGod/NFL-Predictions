@@ -15,3 +15,5 @@ Current predictions before today's games:
 
 ## Updates
 9:15 PM - both the predictions made by the random forest were correct.
+
+2/9/2-25 - the RNN continues to show higher accuracy peaking at about 68 with an updated dataset from the conference finals results. I am now using more attributes such as temperature, wind, location, and even the referee for the analysis. Random forest accuracy increased to as good as a coin flip and predicts the Chiefs to win. The RNN predicts to Eagles to win by 1 point. At this stage while the neural network has a better accuracy the random forest feels more robust and reliable. That said, I expect the Eagles to win today.
